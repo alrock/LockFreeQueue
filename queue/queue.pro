@@ -17,4 +17,5 @@ TEMPLATE = app
 HEADERS += \
     lockfreequeue.h
 
-SOURCES +=
+SOURCES += \
+    main.cpp
