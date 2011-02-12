@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>LockFreeQueue: Исходный файл queue/lockfreequeue.h</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javaScript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css"/>
+</head>
+<body onload='searchBox.OnSelectItem(0);'>
+<!-- Создано системой Doxygen 1.7.1 -->
+<script type="text/javascript"><!--
+var searchBox = new SearchBox("searchBox", "search",false,'Поиск');
+--></script>
+<div class="navigation" id="top">
+  <div class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Титульная&nbsp;страница</span></a></li>
+      <li><a href="annotated.html"><span>Классы</span></a></li>
+      <li class="current"><a href="files.html"><span>Файлы</span></a></li>
+      <li id="searchli">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Поиск" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Файлы</span></a></li>
+    </ul>
+  </div>
+<div class="header">
+  <div class="headertitle">
+<h1>queue/lockfreequeue.h</h1>  </div>
+</div>
+<div class="contents">
+<div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="preprocessor">#ifndef LOCKFREEQUEUE_H</span>
+<a name="l00002"></a>00002 <span class="preprocessor"></span><span class="preprocessor">#define LOCKFREEQUEUE_H</span>
+<a name="l00003"></a>00003 <span class="preprocessor"></span>
+<a name="l00004"></a>00004 <span class="preprocessor">#include &lt;memory&gt;</span>
+<a name="l00005"></a>00005 <span class="preprocessor">#include &lt;QAtomicInt&gt;</span>
+<a name="l00006"></a>00006 
+<a name="l00010"></a><a class="code" href="struct_list_node_base__.html">00010</a> <span class="keyword">struct </span><a class="code" href="struct_list_node_base__.html" title="Базовый класс для элемента односвязного списка.">ListNodeBase_</a> {
+<a name="l00012"></a><a class="code" href="struct_list_node_base__.html#a67a6d50de63a6f64071e6b6496c92ed6">00012</a>         <span class="keyword">enum</span> <a class="code" href="struct_list_node_base__.html#a67a6d50de63a6f64071e6b6496c92ed6" title="Перечисление задаёт возможные состояния элемента.">State</a> { Ready, Unready };
+<a name="l00013"></a>00013 
+<a name="l00014"></a>00014         QAtomicInt state;
+<a name="l00015"></a>00015         <a class="code" href="struct_list_node_base__.html" title="Базовый класс для элемента односвязного списка.">ListNodeBase_</a> *next;
+<a name="l00016"></a>00016 };
+<a name="l00017"></a>00017 
+<a name="l00021"></a><a class="code" href="struct_list_node__.html">00021</a> <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; <span class="keyword">struct </span><a class="code" href="struct_list_node__.html" title="Собственно элемент односвязного списка, несущий информацию.">ListNode_</a>: <span class="keyword">public</span> <a class="code" href="struct_list_node_base__.html" title="Базовый класс для элемента односвязного списка.">ListNodeBase_</a> {
+<a name="l00022"></a>00022         T data;
+<a name="l00023"></a>00023 };
+<a name="l00024"></a>00024 
+<a name="l00036"></a><a class="code" href="classwaitfree__queue.html">00036</a> <span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; <span class="keyword">class </span><a class="code" href="classwaitfree__queue.html" title="Producer/Consumer wait-free queue Очередь предназначенная для работы между двумя потоками, один из которых добавляет в неё элементы, другой читает. Как добавление, так и чтение может производиться только в одном потоке. Шаблонный параметр T в силу лени разработчиков должен быть типом, который не являеся ни указателем, ни ссылкой. В очереди все данные хранятся по указателю, но всё-же возможно добавлять данные через перегруженный метод produce, который принимает константную ссылку и снимает копию данных для хранения в очереди.">waitfree_queue</a> {
+<a name="l00037"></a>00037 <span class="keyword">protected</span>:
+<a name="l00038"></a>00038         <span class="keyword">typedef</span> <a class="code" href="struct_list_node_base__.html" title="Базовый класс для элемента односвязного списка.">ListNodeBase_</a>             <a class="code" href="struct_list_node_base__.html" title="Базовый класс для элемента односвязного списка.">node_base</a>;
+<a name="l00039"></a>00039         <span class="keyword">typedef</span> <a class="code" href="classwaitfree__queue.html" title="Producer/Consumer wait-free queue Очередь предназначенная для работы между двумя потоками, один из которых добавляет в неё элементы, другой читает. Как добавление, так и чтение может производиться только в одном потоке. Шаблонный параметр T в силу лени разработчиков должен быть типом, который не являеся ни указателем, ни ссылкой. В очереди все данные хранятся по указателю, но всё-же возможно добавлять данные через перегруженный метод produce, который принимает константную ссылку и снимает копию данных для хранения в очереди.">waitfree_queue&lt;T&gt;</a>         <a class="code" href="classwaitfree__queue.html" title="Producer/Consumer wait-free queue Очередь предназначенная для работы между двумя потоками, один из которых добавляет в неё элементы, другой читает. Как добавление, так и чтение может производиться только в одном потоке. Шаблонный параметр T в силу лени разработчиков должен быть типом, который не являеся ни указателем, ни ссылкой. В очереди все данные хранятся по указателю, но всё-же возможно добавлять данные через перегруженный метод produce, который принимает константную ссылку и снимает копию данных для хранения в очереди.">queue_type</a>;
+<a name="l00040"></a>00040         <span class="keyword">typedef</span> T&amp;                        reference;
+<a name="l00041"></a>00041         <span class="keyword">typedef</span> <span class="keyword">const</span> T&amp;                  const_reference;
+<a name="l00042"></a>00042         <span class="keyword">typedef</span> T*                        pointer;
+<a name="l00043"></a>00043 
+<a name="l00044"></a>00044         <span class="keyword">typedef</span> <a class="code" href="struct_list_node__.html" title="Собственно элемент односвязного списка, несущий информацию.">ListNode_&lt;pointer&gt;</a>        <a class="code" href="struct_list_node__.html" title="Собственно элемент односвязного списка, несущий информацию.">node</a>;
+<a name="l00045"></a>00045 
+<a name="l00046"></a>00046         <span class="keyword">typedef</span> <span class="keywordtype">size_t</span>                    size_type;
+<a name="l00047"></a>00047 
+<a name="l00048"></a>00048         <a class="code" href="struct_list_node__.html" title="Собственно элемент односвязного списка, несущий информацию.">node</a>* make_empty_node() {
+<a name="l00049"></a>00049                 <a class="code" href="struct_list_node__.html" title="Собственно элемент односвязного списка, несущий информацию.">node</a> *p = <span class="keyword">new</span> <a class="code" href="struct_list_node__.html" title="Собственно элемент односвязного списка, несущий информацию.">node</a>;
+<a name="l00050"></a>00050 
+<a name="l00051"></a>00051                 p-&gt;next = 0;
+<a name="l00052"></a>00052                 p-&gt;state.fetchAndStoreOrdered(node_base::Unready);
+<a name="l00053"></a>00053 
+<a name="l00054"></a>00054                 <span class="keywordflow">return</span> p;
+<a name="l00055"></a>00055         }
+<a name="l00056"></a>00056 
+<a name="l00057"></a>00057         <a class="code" href="struct_list_node__.html" title="Собственно элемент односвязного списка, несущий информацию.">node</a>* fill_node(<a class="code" href="struct_list_node__.html" title="Собственно элемент односвязного списка, несущий информацию.">node</a> *n, pointer v) {
+<a name="l00058"></a>00058                 n-&gt;data = v;
+<a name="l00059"></a>00059                 n-&gt;state.fetchAndStoreOrdered(node_base::Ready);
+<a name="l00060"></a>00060 
+<a name="l00061"></a>00061                 <span class="keywordflow">return</span> n;
+<a name="l00062"></a>00062         }
+<a name="l00063"></a>00063 
+<a name="l00064"></a>00064 <span class="keyword">public</span>:
+<a name="l00065"></a>00065         <a class="code" href="classwaitfree__queue.html" title="Producer/Consumer wait-free queue Очередь предназначенная для работы между двумя потоками, один из которых добавляет в неё элементы, другой читает. Как добавление, так и чтение может производиться только в одном потоке. Шаблонный параметр T в силу лени разработчиков должен быть типом, который не являеся ни указателем, ни ссылкой. В очереди все данные хранятся по указателю, но всё-же возможно добавлять данные через перегруженный метод produce, который принимает константную ссылку и снимает копию данных для хранения в очереди.">waitfree_queue</a>()
+<a name="l00066"></a>00066                 { initialize(); }
+<a name="l00067"></a>00067         <a class="code" href="classwaitfree__queue.html" title="Producer/Consumer wait-free queue Очередь предназначенная для работы между двумя потоками, один из которых добавляет в неё элементы, другой читает. Как добавление, так и чтение может производиться только в одном потоке. Шаблонный параметр T в силу лени разработчиков должен быть типом, который не являеся ни указателем, ни ссылкой. В очереди все данные хранятся по указателю, но всё-же возможно добавлять данные через перегруженный метод produce, который принимает константную ссылку и снимает копию данных для хранения в очереди.">waitfree_queue</a>(<span class="keyword">const</span> <a class="code" href="classwaitfree__queue.html" title="Producer/Consumer wait-free queue Очередь предназначенная для работы между двумя потоками, один из которых добавляет в неё элементы, другой читает. Как добавление, так и чтение может производиться только в одном потоке. Шаблонный параметр T в силу лени разработчиков должен быть типом, который не являеся ни указателем, ни ссылкой. В очереди все данные хранятся по указателю, но всё-же возможно добавлять данные через перегруженный метод produce, который принимает константную ссылку и снимает копию данных для хранения в очереди.">queue_type</a> &amp;q)
+<a name="l00068"></a>00068                 { copy_initialize(q); }
+<a name="l00069"></a>00069 
+<a name="l00070"></a>00070         <a class="code" href="classwaitfree__queue.html" title="Producer/Consumer wait-free queue Очередь предназначенная для работы между двумя потоками, один из которых добавляет в неё элементы, другой читает. Как добавление, так и чтение может производиться только в одном потоке. Шаблонный параметр T в силу лени разработчиков должен быть типом, который не являеся ни указателем, ни ссылкой. В очереди все данные хранятся по указателю, но всё-же возможно добавлять данные через перегруженный метод produce, который принимает константную ссылку и снимает копию данных для хранения в очереди.">waitfree_queue</a>&amp; operator = (<span class="keyword">const</span> <a class="code" href="classwaitfree__queue.html" title="Producer/Consumer wait-free queue Очередь предназначенная для работы между двумя потоками, один из которых добавляет в неё элементы, другой читает. Как добавление, так и чтение может производиться только в одном потоке. Шаблонный параметр T в силу лени разработчиков должен быть типом, который не являеся ни указателем, ни ссылкой. В очереди все данные хранятся по указателю, но всё-же возможно добавлять данные через перегруженный метод produce, который принимает константную ссылку и снимает копию данных для хранения в очереди.">queue_type</a> &amp;q) {
+<a name="l00071"></a>00071                 clear();
+<a name="l00072"></a>00072                 copy_initialize(q);
+<a name="l00073"></a>00073         }
+<a name="l00074"></a>00074 
+<a name="l00079"></a><a class="code" href="classwaitfree__queue.html#ae9649f7336a0663475809ab2281fe238">00079</a>         <span class="keywordtype">bool</span> <a class="code" href="classwaitfree__queue.html#ae9649f7336a0663475809ab2281fe238" title="Проверка на пустоту Безопасна для вызова только из потока, производящего извлечение.">is_empty</a>()<span class="keyword"> const</span>
+<a name="l00080"></a>00080 <span class="keyword">                </span>{ <span class="keywordflow">return</span> first-&gt;state == node_base::Unready; }
+<a name="l00081"></a>00081 
+<a name="l00083"></a>00083         size_type <a class="code" href="classwaitfree__queue.html#a590ccdfee4cfdfdea6dde2a7efe4dc51" title="Не реализовано.">size</a>() <span class="keyword">const</span>;
+<a name="l00084"></a>00084 
+<a name="l00090"></a><a class="code" href="classwaitfree__queue.html#a2a6526245f078103f56786d3deaf4963">00090</a>         <span class="keywordtype">void</span> <a class="code" href="classwaitfree__queue.html#a2a6526245f078103f56786d3deaf4963" title="Добавляет данные в конец очереди Этот метод должен вызываться только в одном потоке. В этом случае он безопасен относительно операции извлечения.">produce</a>(<a class="code" href="struct_item.html">pointer</a> v) {
+<a name="l00091"></a>00091                 <a class="code" href="struct_list_node__.html" title="Собственно элемент односвязного списка, несущий информацию.">node</a> *p = make_empty_node();
+<a name="l00092"></a>00092                 last-&gt;next = p;
+<a name="l00093"></a>00093                 fill_node(last, v);
+<a name="l00094"></a>00094                 last = p;
+<a name="l00095"></a>00095         }
+<a name="l00096"></a>00096 
+<a name="l00102"></a><a class="code" href="classwaitfree__queue.html#a829c0ea48bffa3f8ac1c19c1854c33a6">00102</a>         <a class="code" href="struct_item.html">pointer</a> <a class="code" href="classwaitfree__queue.html#a829c0ea48bffa3f8ac1c19c1854c33a6" title="Извлекает данные из очереди Этот метод должен вызываться только в одном потоке. В этом случае он безо...">consume</a>() {
+<a name="l00103"></a>00103                 <span class="keywordflow">if</span> (first-&gt;state == node_base::Ready) {
+<a name="l00104"></a>00104                         <a class="code" href="struct_item.html">pointer</a> p = first-&gt;data;
+<a name="l00105"></a>00105                         first = <span class="keyword">static_cast&lt;</span><a class="code" href="struct_list_node__.html" title="Собственно элемент односвязного списка, несущий информацию.">node</a>*<span class="keyword">&gt;</span>(first-&gt;next);
+<a name="l00106"></a>00106                         <span class="keywordflow">return</span> p;
+<a name="l00107"></a>00107                 }
+<a name="l00108"></a>00108                 <span class="keywordflow">return</span> 0;
+<a name="l00109"></a>00109         }
+<a name="l00110"></a>00110 
+<a name="l00111"></a>00111 <span class="keyword">private</span>:
+<a name="l00112"></a>00112         node *first;
+<a name="l00113"></a>00113         node *last;
+<a name="l00114"></a>00114 
+<a name="l00115"></a>00115         <span class="keywordtype">void</span> clear() {
+<a name="l00116"></a>00116                 <span class="keywordflow">while</span> (this-&gt;<a class="code" href="classwaitfree__queue.html#a829c0ea48bffa3f8ac1c19c1854c33a6" title="Извлекает данные из очереди Этот метод должен вызываться только в одном потоке. В этом случае он безо...">consume</a>());
+<a name="l00117"></a>00117         }
+<a name="l00118"></a>00118 
+<a name="l00119"></a>00119         <span class="keywordtype">void</span> initialize() {
+<a name="l00120"></a>00120                 node *base = make_empty_node();
+<a name="l00121"></a>00121                 first = last = base;
+<a name="l00122"></a>00122         }
+<a name="l00123"></a>00123 
+<a name="l00124"></a>00124         <span class="keywordtype">void</span> copy_initialize(<span class="keyword">const</span> queue_type &amp;q) {
+<a name="l00125"></a>00125                 initialize();
+<a name="l00126"></a>00126 
+<a name="l00127"></a>00127                 node <span class="keyword">const</span> *p = q.first;
+<a name="l00128"></a>00128                 <span class="keywordflow">while</span> (p-&gt;state == node_base::Ready) {
+<a name="l00129"></a>00129                         this-&gt;<a class="code" href="classwaitfree__queue.html#a2a6526245f078103f56786d3deaf4963" title="Добавляет данные в конец очереди Этот метод должен вызываться только в одном потоке. В этом случае он безопасен относительно операции извлечения.">produce</a>(p-&gt;data);
+<a name="l00130"></a>00130                         p = p-&gt;next;
+<a name="l00131"></a>00131                 }
+<a name="l00132"></a>00132         }
+<a name="l00133"></a>00133 };
+<a name="l00134"></a>00134 
+<a name="l00135"></a>00135 <span class="preprocessor">#endif // LOCKFREEQUEUE_H</span>
+</pre></div></div>
+</div>
+<!--- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>Указатель</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Классы</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Функции</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Перечисления</a></div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<hr class="footer"/><address class="footer"><small>Документация по LockFreeQueue. Последние изменения: Sat Feb 12 2011 19:15:40. Создано системой&nbsp;
+<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.1 </small></address>
+</body>
+</html>

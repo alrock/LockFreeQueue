@@ -10,6 +10,10 @@ public:
     UnitTest();
 
 private Q_SLOTS:
+
+	/**
+	  * @brief Проверка поточного добавления/извлечения на коллизии
+	  */
 	void collision_test();
 };
 
@@ -29,12 +33,17 @@ public:
 	int count;
 
 	void run() {
-		qsrand(100500);
-		items.clear();
-		for (int i = 0; i < count; ++i) {
-			Item *i = new Item(qrand(), qrand() > RAND_MAX/2);
-			items.append(i);
-			q->produce(i);
+		try {
+			qsrand(100500);
+			items.clear();
+			for (int i = 0; i < count; ++i) {
+				Item *i = new Item(qrand(), qrand() > RAND_MAX/2);
+				items.append(i);
+				q->produce(i);
+			}
+		} catch (...) {
+			qDebug() << "Ooops in producer";
+			throw;
 		}
 	}
 };
@@ -46,15 +55,20 @@ public:
 	int count;
 
 	void run() {
-		items.clear();
-		int i = 0;
-		while (i != count) {
-			Item *p = q->consume();
-			if (p) {
-				items.append(p);
-				++i;
+		try {
+			items.clear();
+			int i = 0;
+			while (i != count) {
+				Item *p = q->consume();
+				if (p) {
+					items.append(p);
+					++i;
+				}
+				//QThread::currentThread()->msleep(10);
 			}
-			//QThread::currentThread()->msleep(10);
+		} catch (...) {
+			qDebug() << "Ooops in consumer";
+			throw;
 		}
 	}
 };
@@ -67,7 +81,10 @@ void UnitTest::collision_test() {
 	c.setAutoDelete(false);
 	p.q = c.q = &q;
 
-	for (int i = 10000; i < 300000; i+= 1000) {
+	QTime timer;
+	timer.start();
+
+	for (int i = 10000; i < 500000; i+= 1000) {
 		p.count = c.count = i;
 		QThreadPool::globalInstance()->start(&p);
 		QThreadPool::globalInstance()->start(&c);
@@ -86,6 +103,7 @@ void UnitTest::collision_test() {
 			delete p.items[j];
 		}
 	}
+	qDebug() << timer.elapsed();
 }
 
 QTEST_APPLESS_MAIN(UnitTest);
